@@ -8,7 +8,8 @@ const bcrypt = require('bcryptjs');
 const config = require('../config');
 
 const VerifyToken = require('../auth/VerifyToken');
-const student = require('../model/student');
+const ValidAddition = require('../auth/validAddition');
+const ValidRemoval = require('../auth/validRemoval');
 
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
@@ -42,24 +43,16 @@ router.post('/login', function(req, res) {
     });
 });
 
-router.get('/me', VerifyToken, function(req, res, next) {
-    Student.findById(req.userId, { password: 0 }, function (err, user) {
-      if (err) return res.status(500).send("There was a problem finding the user.");
-      if (!user) return res.status(404).send("No user found.");  
-      res.status(200).send(user);
-    });
-});
-
-router.patch("/add-favorite-teacher", VerifyToken ,async function(req, res, next) {
-    await Student.findByIdAndUpdate(req.userId,{$addToSet: {favouriteTeacher : req.body.teacher}});
+router.patch("/add-favorite-teacher", VerifyToken , ValidAddition ,async function(req, res, next) {
+    await Student.findByIdAndUpdate(req.userId,{$push: {favouriteTeacher : req.body.teacher}});
     await Teacher.findByIdAndUpdate(req.body.teacher,{$inc : {likedBy : 1}});
-    res.send("Successfully added favorite teacher");
+    res.status(200).send("Successfully added favorite teacher");
 });
 
-router.patch("/remove-favorite-teacher", VerifyToken , async function(req,res){
+router.patch("/remove-favorite-teacher", VerifyToken , ValidRemoval , async function(req, res, next){
     await Student.findByIdAndUpdate(req.userId,{$pull: {favouriteTeacher : req.body.teacher}});
     await Teacher.findByIdAndUpdate(req.body.teacher,{$inc : {likedBy : -1}});
-    res.send("Successfully removed favorite teacher");
+    res.status(200).send("Successfully removed favorite teacher");
 });
     
 router.get('/logout', function(req, res) {

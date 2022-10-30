@@ -21,8 +21,8 @@ nodemon server.js
 
 ## API Curls
 
-https://www.getpostman.com/collections/d516d83eb969522c3a15
-Note : You need to update ids(inside body) which and x-access-token(inside) as generated. 
+https://www.getpostman.com/collections/d516d83eb969522c3a15 .
+Note : You need to update teacher ids(inside body) which and x-access-token(inside header) as generated. 
 
 ## Author
 - [@jatin.saini](https://github.com/js-designs-321)
